@@ -16,7 +16,6 @@ class OtpPage extends StatefulWidget {
 
 class _OtpPageState extends State<OtpPage> {
   var code = '';
- 
 
   signIn() async {
     PhoneAuthCredential credential =
@@ -26,8 +25,6 @@ class _OtpPageState extends State<OtpPage> {
       await FirebaseAuth.instance
           .signInWithCredential(credential)
           .then((value) => Get.offAll(Wrapper()));
-
-      
     } on FirebaseAuthException catch (e) {
       Get.snackbar("Error ", e.code);
     } catch (e) {
@@ -74,7 +71,7 @@ class _OtpPageState extends State<OtpPage> {
             child: Text(
               "Recieve OTP",
               style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
             ),
           )),
     );

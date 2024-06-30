@@ -13,6 +13,7 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+  
   final user = FirebaseAuth.instance.currentUser;
   final ChatService _chatService = ChatService();
 

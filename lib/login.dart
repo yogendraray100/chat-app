@@ -43,7 +43,7 @@ class _PhoneHomeState extends State<PhoneHome> {
           Center(
             child: Text(
               "Enter your Phone No.",
-              style: TextStyle(fontSize: 38, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(
@@ -70,7 +70,7 @@ class _PhoneHomeState extends State<PhoneHome> {
             child: Text(
               "Recieve OTP",
               style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
             ),
           )),
     );
