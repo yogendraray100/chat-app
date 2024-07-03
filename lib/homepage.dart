@@ -1,76 +1,58 @@
+import 'package:chat_app/auth/auth_controller.dart';
 import 'package:chat_app/chat/chat_services.dart';
 import 'package:chat_app/chat/chatscreen.dart';
 import 'package:chat_app/components/usertile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 
-class Homepage extends StatefulWidget {
+class Homepage extends ConsumerStatefulWidget {
   const Homepage({super.key});
 
   @override
-  State<Homepage> createState() => _HomepageState();
+  ConsumerState<Homepage> createState() => _HomepageState();
 }
 
-class _HomepageState extends State<Homepage> {
-  
+class _HomepageState extends ConsumerState<Homepage> {
   final user = FirebaseAuth.instance.currentUser;
-  final ChatService _chatService = ChatService();
+  final TextEditingController nameController = TextEditingController();
+  //final ChatService _chatService = ChatService();
 
+  void storeUserData() async {
+    String name = nameController.text.trim();
 
-
-  signOut() async {
-    await FirebaseAuth.instance.signOut();
+    if (name.isNotEmpty) {
+      ref.read(authControllerProvider).saveUserDataToFirebase(context, name);
+    }
   }
+
+ 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Homepage"),
+        title: Text("Users"),
       ),
-      body: _builduserlist(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          signOut();
-        },
-        child: Icon(Icons.logout_outlined),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Container(
+              width: 200,
+              padding: const EdgeInsets.all(20),
+              child: TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter your name',
+                ),
+              ),
+            ),
+            IconButton(onPressed: storeUserData, icon: Icon(Icons.done))
+          ],
+        ),
       ),
-    );
-  }
-
-  Widget _builduserlist() {
-    return StreamBuilder(
-        stream: _chatService.getUserStream(),
-        builder: ((context, snapshot) {
-          if (snapshot.hasError) {
-            return Text("error");
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Text("Loading...");
-          }
-
-          return ListView(
-            children: snapshot.data!
-                .map<Widget>((userData) => _buildUserListItem(userData , context))
-                .toList(),
-          );
-        }));
-  }
-
-  Widget _buildUserListItem(
-      Map<String, dynamic> userData, BuildContext context) {
-    return UserTile(
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ChatPage(
-                      recieverPhone: userData["phone"],
-                    )));
-      },
-      text: userData["phone"],
+     
     );
   }
 }

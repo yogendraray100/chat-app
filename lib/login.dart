@@ -1,36 +1,49 @@
+import 'package:chat_app/auth/auth_controller.dart';
 import 'package:chat_app/otp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 import 'package:get/get_core/get_core.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 
-class PhoneHome extends StatefulWidget {
+class PhoneHome extends ConsumerStatefulWidget {
   const PhoneHome({super.key});
 
   @override
-  State<PhoneHome> createState() => _PhoneHomeState();
+  ConsumerState<PhoneHome> createState() => _PhoneHomeState();
 }
 
-class _PhoneHomeState extends State<PhoneHome> {
-  TextEditingController phonenumber = TextEditingController();
+class _PhoneHomeState extends ConsumerState<PhoneHome> {
+  TextEditingController phoneController = TextEditingController();
 
-  sendcode() async {
-    try {
-      await FirebaseAuth.instance.verifyPhoneNumber(
-          phoneNumber: '+977' + phonenumber.text,
-          verificationCompleted: (PhoneAuthCredential credential) {},
-          verificationFailed: (FirebaseAuthException e) {
-            Get.snackbar("Error occured", e.code);
-          },
-          codeSent: (String vid, int? token) {
-            Get.to(OtpPage(vid: vid));
-          },
-          codeAutoRetrievalTimeout: (vid) {});
-    } on FirebaseAuthException catch (e) {
-      Get.snackbar("Error ", e.code);
-    } catch (e) {
-      Get.snackbar("Error ", e.toString());
+  // sendcode() async {
+  //   try {
+  //     await FirebaseAuth.instance.verifyPhoneNumber(
+  //         phoneNumber: '+977' + phoneNumber.text,
+  //         verificationCompleted: (PhoneAuthCredential credential) async {
+  //           await FirebaseAuth.instance.signInWithCredential(credential);
+  //         },
+  //         verificationFailed: (FirebaseAuthException e) {
+  //           Get.snackbar("Error occured", e.code);
+  //         },
+  //         codeSent: ((String vid, int? token) async {
+  //           Get.to(OtpPage(verificationId: vid));
+  //         }),
+  //         codeAutoRetrievalTimeout: (vid) {});
+  //   } on FirebaseAuthException catch (e) {
+  //     Get.snackbar("Error ", e.code);
+  //   } catch (e) {
+  //     Get.snackbar("Error ", e.toString());
+  //   }
+  // }
+
+  void sendPhoneNumber() {
+    String phoneNumber = phoneController.text.trim();
+
+    if (phoneNumber.isNotEmpty) {
+      ref.read(authControllerProvider).signInWithPhone(context, "+977$phoneNumber");
     }
   }
 
@@ -63,7 +76,7 @@ class _PhoneHomeState extends State<PhoneHome> {
     return Center(
       child: ElevatedButton(
           onPressed: () {
-            sendcode();
+            sendPhoneNumber();
           },
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 50),
@@ -80,7 +93,7 @@ class _PhoneHomeState extends State<PhoneHome> {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: TextField(
-        controller: phonenumber,
+        controller: phoneController,
         keyboardType: TextInputType.number,
         decoration: InputDecoration(
             prefix: Text("+977"),
